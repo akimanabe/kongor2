@@ -15,24 +15,24 @@
 #' foo <-generate_sample(n = 1000, ages = 7)
 #' hist(foo)}
 generate_sample <- function(n, ages, p = c(300, 0.2, 0)) {
-  M <- 0.4 # sample natural mortality
+  mortality <- 0.4 # sample natural mortality
   dat <- tibble::tibble(age = c(1:ages)) %>%
-    dplyr::mutate(Lmean = p[1] * (1 - exp(-p[2] * (age - p[3])))) %>%
-    dplyr::mutate(Number = 100 * exp(-M * age),
+    dplyr::mutate(l_mean = p[1] * (1 - exp(-p[2] * (age - p[3])))) %>%
+    dplyr::mutate(Number = 100 * exp(-mortality * age),
                   Number = round(Number)) %>%
-    dplyr::mutate(Ratio = Number / sum(Number),
-                  Ratio = Ratio * 100,
-                  Ratio = ceiling(Ratio) / 100) %>%
+    dplyr::mutate(ratio = Number / sum(Number),
+                  ratio = ratio * 100,
+                  ratio = ceiling(ratio) / 100) %>%
     dplyr::mutate(Length =
-                    purrr::map2(.x = Lmean, .y = Ratio,
-                                function(Lmean, Ratio){
-                                  rnorm(n * Ratio,
-                                        mean = Lmean,
-                                        sd = Lmean * 0.15)}))
+                    purrr::map2(.x = l_mean, .y = ratio,
+                                function(l_mean, ratio) {
+                                  rnorm(n * ratio,
+                                        mean = l_mean,
+                                        sd = l_mean * 0.15)}))
 
-  Lengths <- dat$Length %>%
+  lengths <- dat$Length %>%
     unlist() %>%
     sample(n)
 
-  return(Lengths)
+  return(lengths)
 }
