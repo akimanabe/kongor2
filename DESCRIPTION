@@ -19,3 +19,5 @@ Imports:
     tibble,
     purrr,
     magrittr
+Suggests: 
+    testthat
