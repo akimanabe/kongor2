@@ -26,7 +26,7 @@ generate_sample <- function(n, ages, p = c(300, 0.2, 0)) {
     dplyr::mutate(Length =
                     purrr::map2(.x = l_mean, .y = ratio,
                                 function(l_mean, ratio) {
-                                  rnorm(n * ratio,
+                                  stats::rnorm(n * ratio,
                                         mean = l_mean,
                                         sd = l_mean * 0.15)}))
 
