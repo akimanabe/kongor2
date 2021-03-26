@@ -10,7 +10,7 @@
 #' \dontrun{
 #' foo <- generate_sample(100, 3)
 #' fit_em(foo, 3)}
-fit_em <- function(dat, age){
+fit_em <- function(dat, age) {
   mclust::Mclust(dat, G = age)
 }
 
@@ -27,5 +27,7 @@ fit_em <- function(dat, age){
 #' foo <- generate_sample(100, 3)
 #' fit_range(foo, ages = c(2:5))}
 fit_range <- function(dat, ages = c(2:4)) {
-purrr::map(ages, function(x) {fit_em(dat, ages)})
+purrr::map(ages, function(x) {
+  fit_em(dat, ages)
+  })
 }

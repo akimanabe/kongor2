@@ -12,4 +12,3 @@ test_that("fit_range works", {
   expect_is(fit_range(generate_sample(100, 3), ages = c(2:4)),
             "list")
 })
-
