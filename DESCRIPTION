@@ -18,6 +18,7 @@ Imports:
     dplyr,
     tibble,
     purrr,
-    magrittr
+    magrittr,
+    mclust
 Suggests: 
     testthat
