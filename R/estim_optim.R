@@ -21,7 +21,7 @@ estim_resids <-
     assertthat::assert_that(length(means) == length(sds),
                             msg = "length of means and sds must be the same")
     dat %>%
-      dplyr::slice(rep(row_number(), length(means))) %>%
+      dplyr::slice(rep(dplyr::row_number(), length(means))) %>%
       dplyr::bind_cols(.,
                        tibble::tibble(mean = rep(means, each = nrow(dat)),
                                       sd   = rep(sds, each = nrow(dat)))
@@ -33,19 +33,6 @@ estim_resids <-
       dplyr::mutate(resids = (Freq_ratio - dnorm_estim)^2) %>%
       dplyr::pull(resids) %>%
       sum(., na.rm = TRUE)
-  }
-
-#' Calculate residuals with ps parameters
-#'
-#' @param ps parameters `c(means, sds)`
-#'
-#' @return sum of residuals
-#' @export
-resid2optim <-
-  function(ps) {
-    estim_resids(dat = dat,
-                 means = ps[1:(length(ps) / 2)],
-                 sds = ps[(length(ps) / 2 + 1): (length(ps))])
   }
 
 #' Estimate means and sds with multiple gaussian distribution to data
@@ -72,7 +59,7 @@ estim_optim <-
     ps <- c(means, sds)
     pnum <- length(ps)
     pnumhalf <- length(ps) / 2
-    calcresid <-
+    resid2optim <-
       function(ps) {
         estim_resids(dat = dat,
                      means = ps[1:(length(ps) / 2)],
