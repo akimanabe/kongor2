@@ -19,6 +19,9 @@ Imports:
     tibble,
     purrr,
     magrittr,
-    mclust
+    mclust,
+    assertthat,
+    tidyr,
+    broom
 Suggests: 
     testthat
