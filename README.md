@@ -5,3 +5,9 @@
   <!-- badges: end -->
 
 kongor仕切り直し
+
+| Verison | Description (What's new) |
+| ---- | ----|
+| 0.0.0.9000 | Add `generate_sample` to create sample data |
+| 0.0.0.9001 | Add `freq_length`, `freq_ratio`, `fit_em`, the EM method |
+| 0.0.0.9002 | Add `estim_optim` to fit multiple gaussians via LS method |
