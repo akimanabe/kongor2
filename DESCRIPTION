@@ -19,7 +19,6 @@ Imports:
     tibble,
     purrr,
     magrittr,
-    mclust,
-    assertthat
+    mclust
 Suggests: 
     testthat
