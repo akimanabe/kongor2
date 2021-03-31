@@ -20,6 +20,7 @@ Imports:
     purrr,
     magrittr,
     mclust,
-    assertthat
+    assertthat,
+    tidyr
 Suggests: 
     testthat
