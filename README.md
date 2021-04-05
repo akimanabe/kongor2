@@ -8,6 +8,10 @@ kongor仕切り直し
 
 | Verison | Description (What's new) |
 | ---- | ----|
-| 0.0.0.9000 | Add `generate_sample` to create sample data |
-| 0.0.0.9001 | Add `freq_length`, `freq_ratio`, `fit_em`, the EM method |
+| 0.0.0.9003 | Add `fit_em_range` to apply fit_em on range of ages |
 | 0.0.0.9002 | Add `estim_optim` to fit multiple gaussians via LS method |
+| 0.0.0.9001 | Add `freq_length`, `freq_ratio`, `fit_em`, the EM method |
+| 0.0.0.9000 | Add `generate_sample` to create sample data |
+
+
+
