@@ -4,12 +4,12 @@
 \alias{fit_em_range}
 \title{fit_em for range of numbers of modes}
 \usage{
-fit_em_range(dat, Ages)
+fit_em_range(dat, ages)
 }
 \arguments{
 \item{dat}{length data to be fitted}
 
-\item{Ages}{vector of numbers of modes}
+\item{ages}{vector of numbers of modes}
 }
 \value{
 tibble with nested mclust result
