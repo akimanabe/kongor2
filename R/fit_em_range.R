@@ -14,5 +14,8 @@
 fit_em_range <- function(dat, ages) {
   suppressWarnings(require(mclust))
   tibble::tibble(Ages =  ages) %>%
-    dplyr::mutate(Result = purrr::map(Ages, function(x) fit_em(dat, x)))
+    dplyr::mutate(Result = purrr::map(Ages, function(x) fit_em(dat, x))) %>%
+    dplyr::mutate(BIC = purrr::pluck(., "Result", 1, "BIC"),
+                  BIC_E = BIC[,"E"], #nolint
+                  BIC_V = BIC[,"V"]) #nolint
 }

@@ -17,10 +17,10 @@ test_that("function fits different numbers of modes", {
 test_that("result has a BIC column", {
   sampledata <- generate_sample(1000, 5)
   expect_equal(fit_em_range(sampledata, c(1, 2, 3, 4, 5)) %>%
-                 dplyr::select(BIC) %>%
+                 dplyr::select(BIC_E) %>%
                  colnames(),
-               "BIC")
+               "BIC_E")
   expect_is(fit_em_range(sampledata, c(1, 2, 3, 4, 5)) %>%
-                 dplyr::pull(BIC),
+                 dplyr::pull(BIC_E),
                "numeric")
 })
