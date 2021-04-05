@@ -57,8 +57,6 @@ estim_resids <-
 estim_optim <-
   function(dat, means, sds) {
     ps <- c(means, sds)
-    pnum <- length(ps)
-    pnumhalf <- length(ps) / 2
     resid2optim <-
       function(ps) {
         estim_resids(dat = dat,
