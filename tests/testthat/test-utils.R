@@ -31,4 +31,9 @@ test_that("function converts length into bin", {
       length_bin() %>%
       dplyr::pull(Length),
     c(110, 120, 300))
+
+  expect_equal(
+    length_bin(foo, binwidth = 20) %>%
+      dplyr::pull(Length),
+    c(100, 120, 300))
 })
