@@ -1,7 +1,7 @@
 # kongor2
 
 <!-- badges: start -->
-  [![Travis build status](https://travis-ci.com/akimanabe/kongor2.svg?branch=master)](https://travis-ci.com/akimanabe/kongor2)
+[![R-CMD-check](https://github.com/akimanabe/kongor2/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/akimanabe/kongor2/actions/workflows/R-CMD-check.yaml)
   <!-- badges: end -->
 
 kongor仕切り直し
