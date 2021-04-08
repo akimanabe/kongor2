@@ -22,7 +22,7 @@ test_that("function returns residual number properly", {
                  means = c(50, 80, 120),
                  sds = c(10, 20, 30)) %>%
       round(., digits = 3),
-    0.011
+    0.107
   )
 
 })
