@@ -4,10 +4,12 @@
 \alias{freq_length}
 \title{Create length frequency}
 \usage{
-freq_length(dat)
+freq_length(dat, binwidth = 10)
 }
 \arguments{
 \item{dat}{length vector}
+
+\item{binwidth}{width of length bin, 10 as standard}
 }
 \value{
 tibble of length bin (1cm) and its frequency
@@ -18,5 +20,5 @@ Create length frequency
 \examples{
 \dontrun{
 freq_length(
-generate_sample(1000, 5))}
+generate_sample(1000, 5), binwidth = 10)}
 }
