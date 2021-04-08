@@ -27,4 +27,4 @@ Imports:
 Suggests: 
     testthat
 Remotes:  
-    git::akimanabe/fishgr
+    akimanabe/fishgr
