@@ -2,29 +2,28 @@
 % Please edit documentation in R/al_sample.R
 \name{al_sample}
 \alias{al_sample}
-\title{Generate Age-Length sample with specified age and sd}
+\title{Generate Age-Length sample}
 \usage{
 al_sample(N, ages, ps, lambda, strength_sd = 10)
 }
 \arguments{
-\item{N}{total number of sample to be produced}
+\item{N}{total number of sample to be generated}
 
-\item{ages}{vector of ages}
+\item{ages}{vector of ages which distribs are based on}
 
-\item{ps}{von bertalanffy parameters}
+\item{ps}{von bert param vector}
 
-\item{lambda}{ratio of each gaussian. vector with length = that of ages}
+\item{lambda}{vector of proportion}
 
-\item{strength_sd}{sd = mean/strength_sd - ages*5, as greater the number, smaller the sd}
+\item{strength_sd}{default = 10, greater the number smaller the sd}
 }
 \value{
 tibble
 }
 \description{
-Generate Age-Length sample with specified age and sd
+Generate Age-Length sample
 }
 \examples{
 \dontrun{
-al_sample(100, c(1, 2, 3), ps = c(500, 0.5, -0.3), lambda = c(1, 2, 3))
-}
+al_sample(100, ages = c(1, 2), ps = c(300, 0.6, 0), lambda = c(3, 1))}
 }
