@@ -1,18 +1,17 @@
-#' Generate Age-Length sample with specified age and sd
+#' Generate Age-Length sample
 #'
-#' @param N total number of sample to be produced
-#' @param ages vector of ages
-#' @param ps von bertalanffy parameters
-#' @param lambda ratio of each gaussian. vector with length = that of ages
-#' @param strength_sd greater the number, smaller the sd
+#' @param N total number of sample to be generated
+#' @param ages vector of ages which distribs are based on
+#' @param ps von bert param vector
+#' @param lambda vector of proportion
+#' @param strength_sd default = 10, greater the number smaller the sd
 #'
 #' @return tibble
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' al_sample(100, c(1, 2, 3), ps = c(500, 0.5, -0.3), lambda = c(1, 2, 3))
-#' }
+#' al_sample(100, ages = c(1, 2), ps = c(300, 0.6, 0), lambda = c(3, 1))}
 al_sample <- function(N, ages, ps, lambda, strength_sd = 10) {
 
   means <- fishgr::vb(age = ages, ps = ps, setorigin = FALSE) %>% round()
