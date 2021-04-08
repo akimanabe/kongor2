@@ -9,7 +9,7 @@ length_bin(dat, binwidth = 10)
 \arguments{
 \item{dat}{length data, vector}
 
-\item{by}{bin size}
+\item{binwidth}{bin size}
 }
 \value{
 tibble with column \code{Length}
