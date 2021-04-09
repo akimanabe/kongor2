@@ -8,6 +8,7 @@ new kongor
 
 | Verison | Description (What's new) |
 | ---- | ----|
+| 0.0.0.9008 | Add `freqsample1` sampledata |
 | 0.0.0.9007 | Add `al_sample` function to generate cool sample |
 | 0.0.0.9006 | Modify `freq_length` to have adjustable binwidth |
 | 0.0.0.9005 | Add AIC and parameter columns; fix bug on BIC columns |
