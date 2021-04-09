@@ -1,0 +1,165 @@
+---
+title: "fugufit"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{fugufit}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+devtools::load_all()
+library(ggplot2)
+```
+
+## Fit fug growth curve
+```{r,fig.height = 5, fig.width = 7}
+fugu <- readr::read_csv("../fugulength.csv")
+
+vbres <- fishgr::fit_vb(fugu, ps = c(550, 0.7, -0.1))
+
+ggplot(fugu, aes(x = Age, y = Length)) + geom_point() +
+  geom_function(fun = fishgr::vb, args = list(ps = c(vbres$value)), color = "blue", size = 1.5) +
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 700))
+
+extres <- fishgr::fit_ext_vb(fugu, ps = c(550, 0.7, 0.5, 2, -0.2))
+
+ggplot(fugu, aes(x = Age, y = Length)) + geom_point() +
+  geom_function(fun = fishgr::vb, args = list(ps = c(extres$value)), color = "blue", size = 1.5) +
+  coord_cartesian(xlim = c(0, 10), ylim = c(0, 700))
+```
+
+| Parameters | Value |
+| ----- | ----- |
+| Linf | `r vbres$value[1]` |
+| K | `r vbres$value[2]` |
+| t_0 | `r vbres$value[3]` |
+
+| Parameters | Value |
+| ----- | ----- |
+| Linf | `r extres$value[1]` |
+| K1 | `r extres$value[2]` |
+| K2 | `r extres$value[3]` |
+| tm | `r extres$value[4]` |
+| t0 | `r extres$value[5]` |
+
+```{r}
+initial_mean <-
+  fishgr::vb((c(1:6) + 2.5/12), ps = vbres$value)
+
+dat <-
+  freqsample1 %>%
+  dplyr::mutate(Freq_ratio = Freq / sum(Freq))
+
+ggplot(dat) +
+  geom_col(aes(x = Length, y = Freq_ratio))
+
+bar <-
+  dat %>%
+  dplyr::mutate(Freq_round = round(Freq * 100)) %>%
+  dplyr::mutate(Length_count = purrr::map2(Length, Freq_round,
+                                           function(x, y) rep(x, y))) %>%
+  dplyr::select(Length_count) %>%
+  tidyr::unnest(cols = c(Length_count))
+
+ggplot(bar) +
+  geom_histogram(aes(Length_count))
+```
+
+```{r}
+meanset7 <- fishgr::vb((c(1:7) + 2.5/12), ps = vbres$value)/10
+res <- mixtools::normalmixEM(bar$Length_count, k = 7, mean.constr = meanset7, sd.constr = c(NA, NA, "a", "a", "b", "b", "b"))
+
+res <- mixtools::normalmixEM(bar$Length_count, k = 6)
+#sd.constr = c(NA, NA, "a", "a", "b", "b", "b")
+
+ddnorm <- function(x, mean, sd, prop){
+  dnorm(x, mean, sd) * prop
+}
+
+mycol <- RColorBrewer::brewer.pal(7, "Set1")
+
+print(summary(res))
+ggplot(dat) +
+  geom_col(aes(x = Length, y = Freq_ratio)) +
+  geom_function(fun = ddnorm, args = list(mean = res$mu[1], sd = res$sigma[1], prop = res$lambda[1]), color = mycol[1], size = 1) +
+  geom_function(fun = ddnorm, args = list(mean = res$mu[2], sd = res$sigma[2], prop = res$lambda[2]), color = mycol[2], size = 1) +
+  geom_function(fun = ddnorm, args = list(mean = res$mu[3], sd = res$sigma[3], prop = res$lambda[3]), color = mycol[3], size = 1) +
+  geom_function(fun = ddnorm, args = list(mean = res$mu[4], sd = res$sigma[4], prop = res$lambda[4]), color = mycol[4], size = 1) +
+  geom_function(fun = ddnorm, args = list(mean = res$mu[5], sd = res$sigma[5], prop = res$lambda[5]), color = mycol[5], size = 1) +
+  geom_function(fun = ddnorm, args = list(mean = res$mu[6], sd = res$sigma[6], prop = res$lambda[6]), color = mycol[6], size = 1) +
+  geom_function(fun = ddnorm, args = list(mean = res$mu[7], sd = res$sigma[7], prop = res$lambda[7]), color = mycol[7], size = 1)
+  
+```
+
+## estimation via maximum loglikelihood
+```{r}
+# Preparing datas
+
+baz <- freqsample1 %>%
+  freq_ratio()
+
+init_means <- fishgr::vb(c(1:7), ps = vbres$value) / 10
+init_sds <- rep(2, 7)
+init_lambda <- c(5, 5, 2, 2, 2, 1, 1)
+init_lambda <- init_lambda / sum(init_lambda)
+dat <- baz
+
+dat %>%
+  dplyr::slice(rep(dplyr::row_number(), length(init_means))) %>%
+  dplyr::bind_cols(.,
+                   tibble::tibble(mean = rep(init_means, each = nrow(dat)),
+                                  sd   = rep(init_sds, each = nrow(dat)),
+                                  lambda = rep(init_lambda, each = nrow(dat)))
+  ) %>%
+  dplyr::mutate(estim_distr = lambda * dnorm(Length, mean, sd)) %>%
+  dplyr::group_by(Length, Freq, Freq_ratio) %>%
+  dplyr::summarise(sum_estim = sum(estim_distr)) %>%
+  dplyr::ungroup() %>%
+  dplyr::mutate(residual = Freq_ratio - sum_estim) %>%
+  dplyr::mutate(residual_sq = residual^2) %>%
+  dplyr::pull(residual_sq) %>%
+  sum()
+
+### LOGLIKELI
+calc_likeli <-
+function(dat, init_means, init_sds, init_lambda){
+dat %>%
+  dplyr::slice(rep(dplyr::row_number(), length(init_means))) %>%
+  dplyr::bind_cols(.,
+                   tibble::tibble(mean = rep(init_means, each = nrow(dat)),
+                                  sd   = rep(init_sds, each = nrow(dat)),
+                                  lambda = rep(init_lambda, each = nrow(dat)))
+  ) %>%
+  dplyr::mutate(estim_distr = lambda * dnorm(Length, mean, sd)) %>%
+  dplyr::group_by(Length, Freq, Freq_ratio) %>%
+  dplyr::summarise(sum_estim = sum(estim_distr)) %>%
+  dplyr::ungroup() %>%
+  dplyr::mutate(loglikeli = Freq_ratio * log(sum_estim)) %>%
+  dplyr::pull(loglikeli) %>%
+  sum() * -1
+}
+estim_mle <-
+  function(dat, init_means, init_sds, init_lambda) {
+    ps <- c(init_means, init_sds, init_lambda)
+    resid2optim <-
+      function(ps) {
+        calc_likeli(dat = dat,
+                     init_means = ps[1:(length(ps) / 3)],
+                     init_sds = ps[((length(ps)/3)+1) :(length(ps)/3*2)],
+                    init_lambda = ps[((length(ps)/3*2)+1) :(length(ps))])
+      }
+    optim(ps, resid2optim, method = "L-BFGS-B", lower = 0) %>%
+      broom::tidy()
+  }
+
+estim_mle(baz, init_means, init_sds, init_lambda)
+
+```
