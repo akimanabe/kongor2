@@ -1,13 +1,3 @@
-#' Generate Age Length sample
-#'
-#' @param n number of sample
-#' @param ages age vector
-#' @param ps vb parameter
-#' @param lambda proportion of each age
-#' @param sdlevel strength of sd, smaller the greater
-#'
-#' @return tibble
-#' @export
 al_sample <-
   function(n, ages, ps, lambda, sdlevel = 10) {
     means <-
