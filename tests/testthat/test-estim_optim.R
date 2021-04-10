@@ -1,9 +1,3 @@
-set.seed(1)
-foodata <-
-  generate_sample(n = 100, ages = 3) %>%
-  freq_length() %>%
-  freq_ratio()
-
 context("estim_resids")
 
 test_that("function exists", {
@@ -11,10 +5,16 @@ test_that("function exists", {
 })
 
 test_that("function returns residual number properly", {
+  set.seed(1)
+  foodata <-
+    generate_sample(n = 100, ages = 3) %>%
+    freq_length() %>%
+    freq_ratio()
+
   expect_is(
   estim_resids(dat = foodata,
                means = c(50, 80, 120),
-               sds =c(10, 20, 30)),
+               sds = c(10, 20, 30)),
   "numeric")
 
   expect_equal(
@@ -34,6 +34,12 @@ test_that("function exists", {
 })
 
 test_that("function estimates parameters", {
+  set.seed(1)
+  foodata <-
+    generate_sample(n = 100, ages = 3) %>%
+    freq_length() %>%
+    freq_ratio()
+
   res <- estim_optim(foodata,
                      means = c(50, 80, 120),
                      sds = c(10, 20, 30))
