@@ -1,6 +1,6 @@
 Package: kongor2
 Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9005
+Version: 0.0.0.9008
 Authors@R: 
     person(given = "First",
            family = "Last",
@@ -22,6 +22,12 @@ Imports:
     mclust,
     assertthat,
     broom,
-    tidyr
+    tidyr,
+    fishgr (>= 0.0.0.9004),
+    readr
 Suggests: 
     testthat
+Remotes: 
+    akimanabe/fishgr
+Depends: 
+    R (>= 2.10)

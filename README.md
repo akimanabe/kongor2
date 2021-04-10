@@ -4,10 +4,13 @@
 [![R-CMD-check](https://github.com/akimanabe/kongor2/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/akimanabe/kongor2/actions/workflows/R-CMD-check.yaml)
   <!-- badges: end -->
 
-kongor仕切り直し
+new kongor
 
 | Verison | Description (What's new) |
 | ---- | ----|
+| 0.0.0.9008 | Add `freqsample1` sampledata |
+| 0.0.0.9007 | Add `al_sample` function to generate cool sample |
+| 0.0.0.9006 | Modify `freq_length` to have adjustable binwidth |
 | 0.0.0.9005 | Add AIC and parameter columns; fix bug on BIC columns |
 | 0.0.0.9004 | Add BIC columns to `fit_em_range` |
 | 0.0.0.9003 | Add `fit_em_range` to apply fit_em on range of ages |
