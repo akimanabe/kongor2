@@ -6,6 +6,7 @@
 # #             pi[2] * dnorm(x, mu[2], sqrt(sigma[2]))))
 # # }
 
+
 log_likelihood.7 <- function(x, mu, sigma, pi) {
   sum(
     log(
