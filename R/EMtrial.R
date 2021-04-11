@@ -1,10 +1,10 @@
-ggplot(baz) +
-  geom_col(aes(x = Length, y = Freq_ratio))
-
-# log_likelihood <- function(x, mu, sigma, pi) {
-#   sum(log(pi[1] * dnorm(x, mu[1], sqrt(sigma[1])) +
-#             pi[2] * dnorm(x, mu[2], sqrt(sigma[2]))))
-# }
+# ggplot2::ggplot(baz) +
+#   ggplot2::geom_col(ggplot2::aes(x = Length, y = Freq_ratio))
+#
+# # log_likelihood <- function(x, mu, sigma, pi) {
+# #   sum(log(pi[1] * dnorm(x, mu[1], sqrt(sigma[1])) +
+# #             pi[2] * dnorm(x, mu[2], sqrt(sigma[2]))))
+# # }
 
 log_likelihood.7 <- function(x, mu, sigma, pi) {
   sum(

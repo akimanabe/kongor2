@@ -1,0 +1,52 @@
+---
+title: "sample_fit_em"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{sample_fit_em}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+devtools::load_all()
+library(ggplot2)
+library(mclust)
+```
+
+```{r, fig.height = 5, fig.width = 6}
+# サンプル用データ作成
+sampledata <- generate_sample(1000, 5)
+
+# 図表用データ作成
+sample_gg <- tibble::tibble(Length = sampledata)
+
+# 描画
+ggplot(sample_gg) +
+  geom_histogram(aes(Length), binwidth = 10) +
+  theme_minimal()
+```
+
+```{r, fig.height = 5, fig.width = 6}
+# EMアルゴリズム計算
+result <- fit_em(dat = sampledata, age = 5)
+
+# 結果を出力
+result$parameters
+
+# 図表データ作成
+sample_gg <-
+  sample_gg %>%
+  dplyr::mutate(class = result$classification,
+                class = factor(class))
+# 描画
+ggplot(sample_gg) +
+  geom_histogram(aes(Length, fill = class), binwidth = 10, position = "stack") +
+  theme_minimal()
+```

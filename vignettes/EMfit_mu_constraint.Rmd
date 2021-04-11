@@ -1,0 +1,199 @@
+---
+title: "EMfit_mu_constraint"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{EMfit_mu_constraint}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+devtools::load_all()
+library(mixtools)
+library(ggplot2)
+library(tidyverse)
+library(RColorBrewer)
+
+lamdnorm <- function(x, mean, sd, lambda, log = FALSE){
+ dnorm(x, mean, sd, log) * lambda
+}
+mycol <- RColorBrewer::brewer.pal(7, "Set1")
+
+
+```
+
+# Fit using EM algorithm
+
+## Constraints on number of modes and means
+
+### Modes = 5
+
+```{r, fig.height = 5, fig.width = 7}
+
+# USE MIXTOOL TO SET CONSTRAINT ON MEANS
+
+#DATA PREP
+
+dat1 <- freqsample1 %>%
+  freq_ratio() %>%
+  dplyr::mutate(NAL = 10000 * Freq_ratio,
+                NAL = round(NAL)) %>%
+  dplyr::mutate(Length_N = purrr::map2(Length, NAL, function(x, y) rep(x, y))) %>%
+  tidyr::unnest(cols = c(Length_N))
+  
+dat2 <- 
+  dat1 %>%
+  dplyr::pull(Length_N)
+
+
+## USE MIXTOOLS
+
+## MODES = 5
+
+### Estimate constraint-means
+setmeans <- fishgr::ext_vb(age = (seq(1:5) + 2/12),
+                          ps = c(61.5, 0.342, 0.17, 1.61, -0.88415))
+
+
+res <- mixtools::normalmixEM(dat2, k=5)
+res_mix <- res
+res_mix$mu
+resk5 <- res
+
+
+## Normal Mix k = 5
+ggplot(freqsample1 %>% freq_ratio()) +
+  geom_col(aes(x = Length, y = Freq_ratio)) +
+  theme_minimal() +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[1], sd = res_mix$sigma[1], lambda = res_mix$lambda[1]), col = mycol[1], size = 1.2) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[2], sd = res_mix$sigma[2], lambda = res_mix$lambda[2]), col = mycol[2], size = 1.2) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[3], sd = res_mix$sigma[3], lambda = res_mix$lambda[3]), col = mycol[3], size = 1.2) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[4], sd = res_mix$sigma[4], lambda = res_mix$lambda[4]), col = mycol[4], size = 1.2) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[5], sd = res_mix$sigma[5], lambda = res_mix$lambda[5]), col = mycol[5], size = 1.2) 
+```
+
+### Modes = 6
+
+```{r, fig.height = 5, fig.width = 7}
+## MODES = 6
+
+### Estimate constraint-means
+setmeans <- fishgr::ext_vb(age = (seq(1:6) + 2/12),
+                          ps = c(61.5, 0.342, 0.17, 1.61, -0.88415))
+
+
+res <- mixtools::normalmixEM(dat2, k=6, mean.constr = setmeans)
+res_mix <- res
+res_mix$mu
+resk6 <- res
+## Normal Mix k = 6
+ggplot(freqsample1 %>% freq_ratio()) +
+  geom_col(aes(x = Length, y = Freq_ratio)) +
+  theme_minimal() +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[1], sd = res_mix$sigma[1], lambda = res_mix$lambda[1]), col = mycol[1], size = 1.2) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[2], sd = res_mix$sigma[2], lambda = res_mix$lambda[2]), col = mycol[2], size = 1.2) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[3], sd = res_mix$sigma[3], lambda = res_mix$lambda[3]), col = mycol[3], size = 1.2) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[4], sd = res_mix$sigma[4], lambda = res_mix$lambda[4]), col = mycol[4], size = 1.2) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[5], sd = res_mix$sigma[5], lambda = res_mix$lambda[5]), col = mycol[5], size = 1.2) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[6], sd = res_mix$sigma[6], lambda = res_mix$lambda[6]), col = mycol[6], size = 1.2) 
+```
+
+### Modes = 7
+
+```{r, fig.height = 5, fig.width = 7}
+
+## MODES = 7
+
+### Estimate constraint-means
+setmeans <- fishgr::ext_vb(age = (seq(1:7) + 2/12),
+                          ps = c(61.5, 0.342, 0.17, 1.61, -0.88415))
+
+
+res <- mixtools::normalmixEM(dat2, k=7, mean.constr = setmeans)
+res_mix <- res
+res_mix$mu
+resk7 <- res
+## Normal Mix k = 7
+ggplot(freqsample1 %>% freq_ratio()) +
+  geom_col(aes(x = Length, y = Freq_ratio)) +
+  theme_minimal() +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[1], sd = res_mix$sigma[1], lambda = res_mix$lambda[1]), col = mycol[1], size = 1.2) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[2], sd = res_mix$sigma[2], lambda = res_mix$lambda[2]), col = mycol[2], size = 1.2) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[3], sd = res_mix$sigma[3], lambda = res_mix$lambda[3]), col = mycol[3], size = 1.2) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[4], sd = res_mix$sigma[4], lambda = res_mix$lambda[4]), col = mycol[4], size = 1.2) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[5], sd = res_mix$sigma[5], lambda = res_mix$lambda[5]), col = mycol[5], size = 1.2) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[6], sd = res_mix$sigma[6], lambda = res_mix$lambda[6]), col = mycol[6], size = 1.2) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[7], sd = res_mix$sigma[7], lambda = res_mix$lambda[7]), col = mycol[7], size = 1.2)
+
+```
+
+### Age 0 to 7
+```{r, fig.height = 5, fig.width = 7}
+
+## MODES = 8
+
+### Estimate constraint-means
+setmeans <- fishgr::ext_vb(age = (c(0, 1, 2, 3, 4, 5, 6, 7) + 2/12),
+                            ps = c(61.5, 0.342, 0.17, 1.61, -0.88415))
+
+
+res <- mixtools::normalmixEM(dat2, k=8, mean.constr = setmeans)
+res_mix <- res
+res_mix$mu
+res_mix$sigma
+res_mix$lambda
+resk7 <- res
+## Normal Mix k = 7
+ggplot(freqsample1 %>% freq_ratio()) +
+  geom_col(aes(x = Length, y = Freq_ratio)) +
+  theme_minimal() +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[1], sd = res_mix$sigma[1], lambda = res_mix$lambda[1]), col = mycol[1], size = 1.2) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[2], sd = res_mix$sigma[2], lambda = res_mix$lambda[2]), col = mycol[2], size = 1.2) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[3], sd = res_mix$sigma[3], lambda = res_mix$lambda[3]), col = mycol[3], size = 1.2) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[4], sd = res_mix$sigma[4], lambda = res_mix$lambda[4]), col = mycol[4], size = 1.2) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[5], sd = res_mix$sigma[5], lambda = res_mix$lambda[5]), col = mycol[5], size = 1.2) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[6], sd = res_mix$sigma[6], lambda = res_mix$lambda[6]), col = mycol[6], size = 1.2) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[7], sd = res_mix$sigma[7], lambda = res_mix$lambda[7]), col = mycol[7], size = 1.2) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[8], sd = res_mix$sigma[8], lambda = res_mix$lambda[8]), col = "salmon", size = 1.2)
+
+```
+
+### Age 0 to 8
+```{r, fig.height = 5, fig.width = 7}
+
+## MODES = 9
+
+### Estimate constraint-means
+setmeans <- fishgr::ext_vb(age = (c(0, 1, 2, 3, 4, 5, 6, 7, 8) + 2/12),
+                            ps = c(61.5, 0.342, 0.17, 1.61, -0.88415))
+
+
+res <- mixtools::normalmixEM(dat2, k=9, mean.constr = setmeans)
+res_mix <- res
+res_mix$mu
+res_mix$sigma
+res_mix$lambda
+resk7 <- res
+## Normal Mix k = 7
+ggplot(freqsample1 %>% freq_ratio()) +
+  geom_col(aes(x = Length, y = Freq_ratio)) +
+  theme_minimal() +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[1], sd = res_mix$sigma[1], lambda = res_mix$lambda[1]), col = mycol[1], size = 1.2) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[2], sd = res_mix$sigma[2], lambda = res_mix$lambda[2]), col = mycol[2], size = 1.2) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[3], sd = res_mix$sigma[3], lambda = res_mix$lambda[3]), col = mycol[3], size = 1.2) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[4], sd = res_mix$sigma[4], lambda = res_mix$lambda[4]), col = mycol[4], size = 1.2) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[5], sd = res_mix$sigma[5], lambda = res_mix$lambda[5]), col = mycol[5], size = 1.2) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[6], sd = res_mix$sigma[6], lambda = res_mix$lambda[6]), col = mycol[6], size = 1.2) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[7], sd = res_mix$sigma[7], lambda = res_mix$lambda[7]), col = mycol[7], size = 1.2) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[8], sd = res_mix$sigma[8], lambda = res_mix$lambda[8]), col = "salmon", size = 1.2) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[9], sd = res_mix$sigma[9], lambda = res_mix$lambda[9]), col = "brown", size = 1.2)
+
+```

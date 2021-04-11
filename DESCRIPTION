@@ -24,7 +24,8 @@ Imports:
     broom,
     tidyr,
     fishgr (>= 0.0.0.9004),
-    readr
+    readr,
+    ggplot2
 Suggests: 
     rmarkdown,
     knitr,

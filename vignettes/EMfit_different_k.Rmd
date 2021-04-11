@@ -1,0 +1,131 @@
+---
+title: "EMfit_different_k"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{EMfit_different_k}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+devtools::load_all()
+library(mixtools)
+library(ggplot2)
+library(tidyverse)
+library(RColorBrewer)
+
+lamdnorm <- function(x, mean, sd, lambda, log = FALSE){
+ dnorm(x, mean, sd, log) * lambda
+}
+mycol <- RColorBrewer::brewer.pal(8, "Set1")
+```
+
+# Fit using EM algorithm
+
+## Constraints on number of modes
+
+### Modes = 5
+
+```{r, fig.height = 5, fig.width = 7}
+
+# USE MIXTOOL TO SET CONSTRAINT ON MEANS
+
+#DATA PREP
+
+dat1 <- freqsample1 %>%
+  freq_ratio() %>%
+  dplyr::mutate(NAL = 10000 * Freq_ratio,
+                NAL = round(NAL)) %>%
+  dplyr::mutate(Length_N = purrr::map2(Length, NAL, function(x, y) rep(x, y))) %>%
+  tidyr::unnest(cols = c(Length_N))
+  
+dat2 <- 
+  dat1 %>%
+  dplyr::pull(Length_N)
+
+## USE MIXTOOLS
+
+## MODES = 5
+res <- mixtools::normalmixEM(dat2, k=5)
+res_mix <- res
+res_mix$mu
+resk5 <- res
+## Normal Mix k = 5
+ggplot(freqsample1 %>% freq_ratio()) +
+  geom_col(aes(x = Length, y = Freq_ratio)) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[1], sd = res_mix$sigma[1], lambda = res_mix$lambda[1]), col = mycol[1]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[2], sd = res_mix$sigma[2], lambda = res_mix$lambda[2]), col = mycol[2]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[3], sd = res_mix$sigma[3], lambda = res_mix$lambda[3]), col = mycol[3]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[4], sd = res_mix$sigma[4], lambda = res_mix$lambda[4]), col = mycol[4]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[5], sd = res_mix$sigma[5], lambda = res_mix$lambda[5]), col = mycol[5]) 
+```
+
+### Modes = 6
+
+```{r, fig.height = 5, fig.width = 7}
+## MODES = 6
+res <- mixtools::normalmixEM(dat2, k=6)
+res_mix <- res
+res_mix$mu
+resk6 <- res
+## Normal Mix k = 6
+ggplot(freqsample1 %>% freq_ratio()) +
+  geom_col(aes(x = Length, y = Freq_ratio)) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[1], sd = res_mix$sigma[1], lambda = res_mix$lambda[1]), col = mycol[1]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[2], sd = res_mix$sigma[2], lambda = res_mix$lambda[2]), col = mycol[2]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[3], sd = res_mix$sigma[3], lambda = res_mix$lambda[3]), col = mycol[3]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[4], sd = res_mix$sigma[4], lambda = res_mix$lambda[4]), col = mycol[4]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[5], sd = res_mix$sigma[5], lambda = res_mix$lambda[5]), col = mycol[5]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[6], sd = res_mix$sigma[6], lambda = res_mix$lambda[6]), col = mycol[6]) 
+```
+
+### Modes = 7
+
+```{r, fig.height = 5, fig.width = 7}
+
+## MODES = 7
+res <- mixtools::normalmixEM(dat2, k=7)
+res_mix <- res
+res_mix$mu
+resk7 <- res
+## Normal Mix k = 7
+ggplot(freqsample1 %>% freq_ratio()) +
+  geom_col(aes(x = Length, y = Freq_ratio)) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[1], sd = res_mix$sigma[1], lambda = res_mix$lambda[1]), col = mycol[1]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[2], sd = res_mix$sigma[2], lambda = res_mix$lambda[2]), col = mycol[2]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[3], sd = res_mix$sigma[3], lambda = res_mix$lambda[3]), col = mycol[3]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[4], sd = res_mix$sigma[4], lambda = res_mix$lambda[4]), col = mycol[4]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[5], sd = res_mix$sigma[5], lambda = res_mix$lambda[5]), col = mycol[5]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[6], sd = res_mix$sigma[6], lambda = res_mix$lambda[6]), col = mycol[6]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[7], sd = res_mix$sigma[7], lambda = res_mix$lambda[7]), col = mycol[7])
+
+```
+### Modes = 8
+
+```{r, fig.height = 5, fig.width = 7}
+
+## MODES = 8
+res <- mixtools::normalmixEM(dat2, k=8)
+res_mix <- res
+res_mix$mu
+resk8 <- res
+## Normal Mix k = 8
+ggplot(freqsample1 %>% freq_ratio()) +
+  geom_col(aes(x = Length, y = Freq_ratio)) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[1], sd = res_mix$sigma[1], lambda = res_mix$lambda[1]), col = mycol[1]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[2], sd = res_mix$sigma[2], lambda = res_mix$lambda[2]), col = mycol[2]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[3], sd = res_mix$sigma[3], lambda = res_mix$lambda[3]), col = mycol[3]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[4], sd = res_mix$sigma[4], lambda = res_mix$lambda[4]), col = mycol[4]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[5], sd = res_mix$sigma[5], lambda = res_mix$lambda[5]), col = mycol[5]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[6], sd = res_mix$sigma[6], lambda = res_mix$lambda[6]), col = mycol[6]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[7], sd = res_mix$sigma[7], lambda = res_mix$lambda[7]), col = mycol[7]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_mix$mu[8], sd = res_mix$sigma[8], lambda = res_mix$lambda[8]), col = mycol[8])
+
+```

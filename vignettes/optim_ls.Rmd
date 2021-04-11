@@ -1,0 +1,166 @@
+---
+title: "optim_ls"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{optim_ls}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+```{r setup}
+devtools::load_all()
+library(tidyverse)
+library(ggplot2)
+```
+```{r, fig.height=5, fig.width=7}
+# Set initial parameters
+
+setmeans <- fishgr::ext_vb(age = (seq(1:7) + 2/12),
+                           ps = c(61.5, 0.342, 0.17, 1.61, -0.88415))
+means <- round(setmeans)
+sds <- c(means/10)
+lambda <- c(4, 5, 3, 2, 1, 1, 1)
+lambda <- lambda / sum(lambda)
+sum(lambda)
+dat <- freqsample1
+
+#foo_resid(freqsample1, means= round(setmeans), sds = sds, lambda = lambda, setmeans = setmeans)
+
+
+estimator <-
+  function(dat, means, sds, lambda, setmeans) {
+    ps <- c(means, sds, lambda)
+    resid2optim <-
+      function(ps) {
+        foo_resid(dat = dat,
+                     means = ps[1:(length(ps)/3)],
+                     sds = ps[((length(ps)/3)+1): (length(ps)/3*2)],
+                  lambda = ps[((length(ps)/3*2)+1):length(ps)],
+                  setmeans = setmeans)
+      }
+    res <- optim(ps, resid2optim, method = "L-BFGS-B", lower = 0)
+    return(res)
+      # res %>% broom::tidy() %>%
+      # print(n = length(ps))
+  }
+
+foo_resid <- function(dat, means, sds, lambda, setmeans){
+  dat %>%
+    freq_ratio() %>%
+    dplyr::slice(rep(dplyr::row_number(), length(means))) %>%
+    dplyr::bind_cols(.,
+                     tibble::tibble(mean = rep(means, each = nrow(dat)),
+                                    sd   = rep(sds, each = nrow(dat)),
+                                    lambda = rep(lambda, each = nrow(dat)),
+                                    setmeans = rep(setmeans, each = nrow(dat)))) %>%
+      dplyr::mutate(dnorms = dnorm(Length, mean, sd) * lambda) %>%
+      dplyr::group_by(Length, Freq, Freq_ratio) %>%
+      dplyr::summarise(dnorm_sum = sum(dnorms)) %>%
+      dplyr::mutate(dnorm_estim = dnorm_sum / length(means)) %>%
+      dplyr::mutate(resids = (Freq_ratio - dnorm_estim)^2) %>%
+      dplyr::pull(resids) %>%
+      sum(., na.rm = TRUE) +
+  sum(abs(means-setmeans))/(200) # <- this value is penalty
+}
+
+
+res2 <-estimator(freqsample1, means= round(setmeans), sds = sds, lambda = lambda, setmeans = setmeans)
+
+respars <-
+res2 %>%
+  broom::tidy() %>%
+  dplyr::mutate(parameter = c(
+    paste("mu","age", c(1:7), sep = "_"),
+    paste("sigma","age", c(1:7), sep = "_"),
+    paste("lambda","age", c(1:7), sep = "_")
+  ))
+
+
+res_p <-
+  res2 %>%
+  broom::tidy() %>%
+  dplyr::mutate(parameter = c(
+    rep("mean", length(res2$par)/3),
+    rep("sigma", length(res2$par)/3),
+    rep("lambda", length(res2$par)/3)
+  )) %>%
+  dplyr::mutate(age = rep(1:(length(res2$par)/3),3)) %>%
+  tidyr::pivot_wider(names_from = parameter, values_from = value) %>%
+  dplyr::mutate(lambda_ratio = lambda / sum(lambda))
+
+lamdnorm <- function(x, mean, sd, lambda, log = FALSE){
+  dnorm(x, mean, sd, log) * lambda
+}
+
+mycol <- RColorBrewer::brewer.pal(7, "Set1")
+
+ggplot(freqsample1 %>% freq_ratio()) +
+  geom_col(aes(x = Length, y = Freq_ratio)) +
+  stat_function(fun = lamdnorm, args = list(mean = res_p$mean[1], sd = res_p$sigma[1], lambda = res_p$lambda_ratio[1]), col = mycol[1]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_p$mean[2], sd = res_p$sigma[2], lambda = res_p$lambda_ratio[2]), col = mycol[2]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_p$mean[3], sd = res_p$sigma[3], lambda = res_p$lambda_ratio[3]), col = mycol[3]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_p$mean[4], sd = res_p$sigma[4], lambda = res_p$lambda_ratio[4]), col = mycol[4]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_p$mean[5], sd = res_p$sigma[5], lambda = res_p$lambda_ratio[5]), col = mycol[5]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_p$mean[6], sd = res_p$sigma[6], lambda = res_p$lambda_ratio[6]), col = mycol[6]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_p$mean[7], sd = res_p$sigma[7], lambda = res_p$lambda_ratio[7]), col = mycol[7])
+
+```
+
+Set age 0 to 7
+```{r, fig.height=5, fig.width=7}
+setmeans <- fishgr::ext_vb(age = (c(0:7) + 2/12),
+                           ps = c(61.5, 0.342, 0.17, 1.61, -0.88415))
+means <- round(setmeans)
+sds <- c(means/10)
+lambda <- c(4, 5, 3, 2, 1, 1, 1, 1)
+lambda <- lambda / sum(lambda)
+sum(lambda)
+
+res3 <-estimator(freqsample1, means= round(setmeans), sds = sds, lambda = lambda, setmeans = setmeans)
+
+respars <-
+res3 %>%
+  broom::tidy() %>%
+  dplyr::mutate(parameter = c(
+    paste("mu","age", c(1:8), sep = "_"),
+    paste("sigma","age", c(1:8), sep = "_"),
+    paste("lambda","age", c(1:8), sep = "_")
+  ))
+
+
+res_p <-
+  res3 %>%
+  broom::tidy() %>%
+  dplyr::mutate(parameter = c(
+    rep("mean", length(res3$par)/3),
+    rep("sigma", length(res3$par)/3),
+    rep("lambda", length(res3$par)/3)
+  )) %>%
+  dplyr::mutate(age = rep(1:(length(res3$par)/3),3)) %>%
+  tidyr::pivot_wider(names_from = parameter, values_from = value) %>%
+  dplyr::mutate(lambda_ratio = lambda / sum(lambda))
+
+lamdnorm <- function(x, mean, sd, lambda, log = FALSE){
+  dnorm(x, mean, sd, log) * lambda
+}
+
+mycol <- RColorBrewer::brewer.pal(8, "Set1")
+
+ggplot(freqsample1 %>% freq_ratio()) +
+  geom_col(aes(x = Length, y = Freq_ratio)) +
+  stat_function(fun = lamdnorm, args = list(mean = res_p$mean[1], sd = res_p$sigma[1], lambda = res_p$lambda_ratio[1]), col = mycol[1]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_p$mean[2], sd = res_p$sigma[2], lambda = res_p$lambda_ratio[2]), col = mycol[2]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_p$mean[3], sd = res_p$sigma[3], lambda = res_p$lambda_ratio[3]), col = mycol[3]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_p$mean[4], sd = res_p$sigma[4], lambda = res_p$lambda_ratio[4]), col = mycol[4]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_p$mean[5], sd = res_p$sigma[5], lambda = res_p$lambda_ratio[5]), col = mycol[5]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_p$mean[6], sd = res_p$sigma[6], lambda = res_p$lambda_ratio[6]), col = mycol[6]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_p$mean[7], sd = res_p$sigma[7], lambda = res_p$lambda_ratio[7]), col = mycol[7]) +
+  stat_function(fun = lamdnorm, args = list(mean = res_p$mean[8], sd = res_p$sigma[8], lambda = res_p$lambda_ratio[8]), col = mycol[8])
+```
